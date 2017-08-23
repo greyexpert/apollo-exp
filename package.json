@@ -1,0 +1,42 @@
+{
+  "name": "apollow-exp",
+  "version": "1.0.0",
+  "description": "Experiments with Apollo+React+Redux",
+  "main": "index.js",
+  "scripts": {
+    "start": "node $NODE_DEBUG_OPTION -r babel-register ./build/devServer.js",
+    "build": "node $NODE_DEBUG_OPTION -r babel-register ./node_modules/.bin/webpack --config ./build/webpack/config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/greyexpert/apollo-exp.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/greyexpert/apollo-exp/issues"
+  },
+  "homepage": "https://github.com/greyexpert/apollo-exp#readme",
+  "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "material-ui": "^0.19.0",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "react-hot-loader": "^3.0.0-beta.7"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-export-extensions": "^6.22.0",
+    "babel-plugin-transform-function-bind": "^6.22.0",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-3": "^6.24.1",
+    "babel-register": "^6.26.0",
+    "html-webpack-plugin": "^2.30.1",
+    "webpack": "^3.5.5",
+    "webpack-dev-server": "^2.7.1",
+    "webpack-merge": "^4.1.0"
+  }
+}

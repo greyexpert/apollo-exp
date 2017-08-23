@@ -1,0 +1,25 @@
+{
+  "presets": [
+    "react",
+    "stage-3",
+
+    ["env", {
+      "targets": {
+        "chrome": 60,
+        "node": "current"
+      },
+
+      "modules": false,
+      "useBuiltIns": true,
+      "debug": true
+    }]
+  ],
+
+  "plugins": [
+    "react-hot-loader/babel",
+
+    "transform-class-properties",
+    "transform-export-extensions",
+    "transform-function-bind"
+  ]
+}
