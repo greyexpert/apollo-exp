@@ -20,10 +20,35 @@ export default {
   module: {
     rules: [
       {
-        test: /\.js$/,
-        exclude: /(node_modules)/,
-        use: [
-          { loader: 'babel-loader' },
+        oneOf: [
+          {
+            test: /\.(js|jsx)$/,
+            include: sourceDir,
+            loader: 'babel-loader',
+            options: {
+              compact: true,
+            },
+          },
+
+          {
+            test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
+            loader: 'url-loader',
+            options: {
+              limit: 10000,
+              name: 'assets/[name].[hash:8].[ext]',
+            },
+          },
+
+          // New loaders here...
+
+          {
+            // Fallback loader
+            loader: 'file-loader',
+            exclude: [/\.js$/, /\.html$/, /\.json$/],
+            options: {
+              name: 'assets/[name].[hash:8].[ext]',
+            },
+          },
         ],
       },
     ],

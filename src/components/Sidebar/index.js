@@ -1,23 +1,23 @@
 import { gql, graphql } from 'react-apollo';
 
-import UserList from './UserList';
+import Sidebar from './Sidebar';
 
 const query = gql`
-query UserList {
-  allUsers {
-    id,
-    name
+query Sidebar {
+  User(id: "cj6jd7fk2kver0124unux3co3") {
+    name,
+    email
   }
 }
 `;
 
 export default graphql(query, {
   props: ({ data }) => {
-    console.log(data);
+    console.log('Sidebar');
 
     return {
       loading: data.loading,
-      users: data.allUsers,
+      user: data.User,
     };
   },
-})(UserList);
+})(Sidebar);
