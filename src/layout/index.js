@@ -35,7 +35,7 @@ export default class Layout extends Component {
           <AppBar
             title="Users"
             iconClassNameRight="muidocs-icon-navigation-expand-more"
-            onLeftIconButtonTouchTap={() => this.toggleDrawer()}
+            onLeftIconButtonClick={() => this.toggleDrawer()}
           />
 
           <Drawer

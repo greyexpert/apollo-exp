@@ -1,0 +1,16 @@
+{
+  "schema": {
+    "request": {
+      "url" : "http://172.27.0.74/ow/oxwall/everywhere/api/graphql?XDEBUG_SESSION_START=PHPSTORM",
+      "method" : "POST",
+      "postIntrospectionQuery" : true
+    }
+  },
+
+  "endpoints" : [
+    {
+      "name": "Oxwall",
+      "url": "http://172.27.0.74/ow/oxwall/everywhere/api/graphql?XDEBUG_SESSION_START=PHPSTORM"
+    }
+  ]
+}

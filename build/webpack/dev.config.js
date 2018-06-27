@@ -10,6 +10,7 @@ const merge = smartStrategy({
 });
 
 export default merge(baseConfig, {
+  mode: 'development',
   entry: {
     main: [
       'react-hot-loader/patch',

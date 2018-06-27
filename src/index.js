@@ -1,21 +1,14 @@
 import ReactDOM from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
-import { ApolloClient, ApolloProvider, createBatchingNetworkInterface } from 'react-apollo';
+import { ApolloProvider } from 'react-apollo';
 
 import Root from './layout';
-
-const networkInterface = createBatchingNetworkInterface({
-  uri: 'https://api.graph.cool/simple/v1/cj6jbzcmn00zz0191mq94xnua'
-});
-
-const client = new ApolloClient({
-  networkInterface: networkInterface,
-});
+import apolloClient from './graph';
 
 const render = NextRoot  => {
   ReactDOM.render(
     <AppContainer>
-      <ApolloProvider client={client}>
+      <ApolloProvider client={apolloClient}>
         <NextRoot />
       </ApolloProvider>
     </AppContainer>,

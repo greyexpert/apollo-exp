@@ -1,11 +1,12 @@
-import { gql, graphql } from 'react-apollo';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
 
 import Sidebar from './Sidebar';
 
 const query = gql`
 query Sidebar {
   User(id: "cj6jd7fk2kver0124unux3co3") {
-    name,
+    name
     email
   }
 }
