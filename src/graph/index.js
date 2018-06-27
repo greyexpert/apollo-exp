@@ -14,10 +14,11 @@ const cache = new InMemoryCache({
 });
 
 const httpLink = createHttpLink({
-  uri: 'https://api.graph.cool/simple/v1/cj6jbzcmn00zz0191mq94xnua',
+  uri: 'http://172.27.0.74/ow/oxwall/everywhere/api/graphql?XDEBUG_SESSION_START=PHPSTORM',
 });
 
 const client = new ApolloClient({
+  connectToDevTools: true,
   link: httpLink,
   cache: new InMemoryCache()
 });

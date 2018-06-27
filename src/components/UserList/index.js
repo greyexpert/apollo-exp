@@ -4,12 +4,17 @@ import { graphql } from 'react-apollo';
 import UserList from './UserList';
 
 const query = gql`
-query UserList {
-  allUsers {
-    id
-    name
+  query UserList {
+    users {
+      edges {
+        node {
+          id
+          name
+          email
+        }
+      }
+    }
   }
-}
 `;
 
 export default graphql(query, {
@@ -18,7 +23,7 @@ export default graphql(query, {
 
     return {
       loading: data.loading,
-      users: data.allUsers,
+      users: data.users ? data.users.edges.map(edge => edge.node) : [],
     };
   },
 })(UserList);
