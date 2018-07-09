@@ -1,5 +1,6 @@
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import update from 'immutability-helper';
 
 import MessageList from './MessageList';
 
@@ -79,19 +80,15 @@ export default graphql(query, {
               node: subscriptionData.data.onMessageAdd,
             };
 
-            return {
-              ...prev,
+            return update(prev, {
               chat: {
-                ...prev.chat,
                 messages: {
-                  ...prev.chat.messages,
-                  edges: [
-                    newEdge,
-                    ...prev.chat.messages.edges,
-                  ],
-                },
-              },
-            };
+                  edges: {
+                    $unshift: [newEdge],
+                  }
+                }
+              }
+            });
           },
         });
       },
