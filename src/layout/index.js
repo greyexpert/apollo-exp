@@ -4,7 +4,8 @@ import ThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import AppBar from 'material-ui/AppBar';
 import Drawer from 'material-ui/Drawer';
 
-import UserList from 'components/UserList';
+import MessageList from 'components/MessageList';
+import SubscriptionTest from 'components/SubscriptionTest';
 import Sidebar from 'components/Sidebar';
 
 const Container = styled.div`
@@ -47,7 +48,7 @@ export default class Layout extends Component {
             <Sidebar />
           </Drawer>
 
-          <UserList />
+          <MessageList />
         </Container>
       </ThemeProvider>
     );
