@@ -29,8 +29,12 @@ const messageFragment = gql`
 const subscription = gql`
   subscription {
     onMessageAdd(chatId: "Chat:68") {
-      id
-      ...MessageList_node
+      edge {
+        node {
+          id
+          ...MessageList_node
+        }
+      }
     }
   }
   
@@ -75,10 +79,7 @@ export default graphql(query, {
           updateQuery: (prev, { subscriptionData }) => {
             if (!subscriptionData.data) return prev;
 
-            const newEdge = {
-              __typename: 'MessageEdge',
-              node: subscriptionData.data.onMessageAdd,
-            };
+            const newEdge = subscriptionData.data.onMessageAdd.edge;
 
             return update(prev, {
               chat: {

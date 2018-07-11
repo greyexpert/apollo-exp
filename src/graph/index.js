@@ -3,7 +3,7 @@ import { createHttpLink } from "apollo-link-http";
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { split } from 'apollo-link';
 import { toIdValue, getMainDefinition } from 'apollo-utilities';
-import { SubscriptionClient, SSELink } from 'subscriptions-transport-sse';
+import SSELink, { SubscriptionClient } from './SSELink';
 
 const cache = new InMemoryCache({
   dataIdFromObject: object => object.id || null,
@@ -21,9 +21,10 @@ const httpLink = createHttpLink({
 });
 
 const sseLink = new SSELink(
-  new SubscriptionClient(
-    `http://172.27.0.74/ow/oxwall/everywhere/api/subscriptions`,
-    {},
+  new SubscriptionClient({
+      uri: 'http://172.27.0.74/ow/oxwall/everywhere/api/subscriptions?XDEBUG_SESSION_START=PHPSTORM',
+      streamId: 'grey',
+    },
   ),
 );
 
