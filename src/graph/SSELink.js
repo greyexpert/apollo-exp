@@ -1,9 +1,9 @@
 import { ApolloLink, Observable } from 'apollo-link';
 import { print } from 'graphql/language/printer';
 import URL from 'url-parse';
-import { isString, isObject, trim, isEmpty } from 'lodash';
+import { isString, isObject, trim, isEmpty, without, memoize, find, isEqual } from 'lodash';
 
-function addPathPart(url, parts) {
+const addPathPart = (url, parts) => {
   const urlObject = new URL(url);
   const path = urlObject.pathname.split('/');
   urlObject.pathname = [
@@ -14,6 +14,8 @@ function addPathPart(url, parts) {
 
   return urlObject.toString();
 }
+
+const printQuery = memoize(print);
 
 export class SubscriptionClient {
   constructor({ uri, streamId }) {
@@ -41,14 +43,10 @@ export class SubscriptionClient {
   }
 
   onMessage = (event) => {
-    const message = JSON.parse(event.data);
+    const { data, type, subscriptionId } = JSON.parse(event.data);
 
-    console.log(message);
-
-    if (message.type === 'SUBSCRIPTION_DATA') {
-      const handler = this.subscriptions[message.subscriptionId];
-
-      handler && handler(message.data);
+    if (type === 'SUBSCRIPTION_DATA' && this.subscriptions[subscriptionId]) {
+      this.subscriptions[subscriptionId].handlers.forEach(handler => handler(data));
     }
   };
 
@@ -57,6 +55,26 @@ export class SubscriptionClient {
       this.restart();
     }
   };
+
+  async getSubscription(operation) {
+    const subscription = find(this.subscriptions, ({ query, variables }) => (
+      query === operation.query && isEqual(variables, operation.variables)
+    ));
+
+    if (subscription) {
+      return subscription;
+    }
+
+    const { subscriptionId } = await this.request(this.uri, 'POST', operation);
+    this.subscriptions[subscriptionId] = this.subscriptions[subscriptionId] || {
+      subscriptionId,
+      query: operation.query,
+      variables: operation.variables,
+      handlers: [],
+    };
+
+    return this.subscriptions[subscriptionId];
+  }
 
   async start() {
     this.eventSource = new EventSource(this.uri);
@@ -89,8 +107,8 @@ export class SubscriptionClient {
     }
   }
 
-  async subscribe(options, handler) {
-    const { query, variables, operationName, context } = options;
+  async subscribe(operation, handler) {
+    const { query, variables, operationName } = operation;
 
     if (!query) {
       throw new Error('Must provide `query` to subscribe.');
@@ -109,24 +127,36 @@ export class SubscriptionClient {
       );
     }
 
-    const { subscriptionId } = await this.request(this.uri, 'POST', options);
+    const { subscriptionId, handlers } = await this.getSubscription(operation);
 
-    this.subscriptions[subscriptionId] = handler;
+    handlers.push(handler);
+
     await this.restart();
 
     return subscriptionId;
   }
 
-  async unsubscribe(subscriptionId) {
-    const url = addPathPart(this.uri, [subscriptionId]);
+  async unsubscribe(subscriptionId, handler) {
+    const subId = await Promise.resolve(subscriptionId);
+    const subscription = this.subscriptions[subId];
 
-    await this.request(url, 'DELETE');
-    delete this.subscriptions[subscriptionId];
+    if (!subscription) {
+      return;
+    }
 
+    subscription.handlers = without(subscription.handlers, handler);
+
+    if (subscription.handlers.length) {
+      return;
+    }
+
+    delete this.subscriptions[subId];
+
+    await this.request(addPathPart(this.uri, [subId]), 'DELETE');
     await this.restart();
   }
 
-  async destroy() {
+  async unsubscribeAll() {
     await this.stop();
     this.subscriptions = {};
 
@@ -141,17 +171,18 @@ export default class SSELink extends ApolloLink {
     this.subscriptionClient = client;
   }
 
-  request(operation) {
+  request(opertaion) {
     return new Observable(observer => {
+      const handler = data => observer.next({ data });
       const subscriptionId = this.subscriptionClient.subscribe(
         {
-          ...operation,
-          query: print(operation.query),
+          ...opertaion,
+          query: printQuery(opertaion.query),
         },
-        data => observer.next({ data }),
+        handler,
       );
 
-      return () => this.subscriptionClient.unsubscribe(subscriptionId);
+      return () => this.subscriptionClient.unsubscribe(subscriptionId, handler);
     });
   }
 }
