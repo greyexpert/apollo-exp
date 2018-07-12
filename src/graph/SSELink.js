@@ -18,8 +18,10 @@ const addPathPart = (url, parts) => {
 const printQuery = memoize(print);
 
 export class SubscriptionClient {
-  constructor({ uri, streamId }) {
+  constructor({ uri, streamId, fetchImpl, EventSourceImpl }) {
     this.uri = addPathPart(uri, [streamId]);
+    this.fetch = fetchImpl || ((...args) => fetch(...args));
+    this.EventSource = EventSourceImpl || EventSource;
 
     this.eventSource = null;
     this.subscriptions = {};
@@ -30,7 +32,7 @@ export class SubscriptionClient {
   }
 
   async request(uri, method, body) {
-    const res = await fetch(uri.toString(), {
+    const res = await this.fetch(uri.toString(), {
       method,
       headers: {
         'Content-Type': 'application/json',
@@ -51,7 +53,10 @@ export class SubscriptionClient {
   };
 
   onError = (error) => {
-    if (this.eventSource.readyState !== EventSource.CONNECTING) {
+    /**
+     * Restart if not connecting
+     */
+    if (this.eventSource.readyState !== 0) {
       this.restart();
     }
   };
@@ -77,7 +82,7 @@ export class SubscriptionClient {
   }
 
   async start() {
-    this.eventSource = new EventSource(this.uri);
+    this.eventSource = new this.EventSource(this.uri);
 
     await new Promise((resolve, reject) => {
       this.eventSource.addEventListener('open', () => resolve(this.eventSource));
